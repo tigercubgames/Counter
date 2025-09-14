@@ -1,35 +1,31 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Counter : MonoBehaviour
 {
-    [SerializeField] private Text _counterText;
+    private const int StartValue = 0;
+    
     [SerializeField] private float _timeInterval = 0.5f;
     [SerializeField] private int _countStep = 1;
+    
+    public UnityEvent<int> ValueChanged;
     
     private Coroutine _countingCoroutine;
     private int _counterValue = 0;
     private bool _isCounting = false;
 
-    private void Start()
+    public void ToggleCounting()
     {
-        _counterText.text = "0";
-    }
-
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
+        if (_isCounting)
         {
-            if (_isCounting)
-            {
-                DisableCounter();
-            }
-            else
-            {
-                EnableCounter();
-            }
+            DisableCounter();
+        }
+        else
+        {
+            EnableCounter();
         }
     }
     
@@ -55,7 +51,7 @@ public class Counter : MonoBehaviour
         while (_isCounting)
         {
             _counterValue += _countStep;
-            _counterText.text = _counterValue.ToString();
+            ValueChanged.Invoke(_counterValue);
 
             yield return new WaitForSeconds(_timeInterval);
         }
