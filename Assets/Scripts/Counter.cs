@@ -11,11 +11,11 @@ public class Counter : MonoBehaviour
     [SerializeField] private float _timeInterval = 0.5f;
     [SerializeField] private int _countStep = 1;
     
-    public UnityEvent<int> ValueChanged;
-    
     private Coroutine _countingCoroutine;
     private int _counterValue = 0;
     private bool _isCounting = false;
+    
+    public event Action<int> ValueChanged;
 
     public void ToggleCounting()
     {
@@ -48,12 +48,14 @@ public class Counter : MonoBehaviour
 
     private IEnumerator Counting()
     {
+        WaitForSeconds wait = new WaitForSeconds(_timeInterval);
+        
         while (_isCounting)
         {
             _counterValue += _countStep;
-            ValueChanged.Invoke(_counterValue);
+            ValueChanged?.Invoke(_counterValue);
 
-            yield return new WaitForSeconds(_timeInterval);
+            yield return wait;
         }
     }
 }
